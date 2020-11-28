@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
 @RestController
 public class SudokuController {
 
@@ -14,6 +16,8 @@ public class SudokuController {
     public String getBody(@RequestBody() String input) {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(SudokuBoard.class, new SudokuBoardDeserializer())
+                .registerTypeAdapter(SudokuCells.class, new SudokuRowDeserializer())
+                .registerTypeAdapter(ArrayList.class, new SudokuColDeserializer())
                 .create();
         SudokuBoard gameSpace = gson.fromJson(input, SudokuBoard.class);
         String Breakpoint = "";

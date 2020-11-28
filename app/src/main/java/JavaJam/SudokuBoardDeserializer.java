@@ -1,20 +1,15 @@
 package JavaJam;
 
 import com.google.gson.*;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 class SudokuBoardDeserializer implements JsonDeserializer {
     public SudokuBoard deserialize(JsonElement json, Type TypeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Gson gson = new Gson();
-        SudokuCells cells = new SudokuCells();
+        SudokuCells cells;
         JsonObject jsonObject = json.getAsJsonObject();
-        JsonElement jBoard = jsonObject.get("board");
-
-        SudokuRowDeserializer srd = new SudokuRowDeserializer();
-        cells = srd.deserialize(jBoard, SudokuCells.class, context);
+        JsonArray jBoard = jsonObject.get("board").getAsJsonArray();
+        cells = context.deserialize(jBoard, SudokuCells.class);
 
         SudokuBoard board = new SudokuBoard(cells);
         return board;
@@ -26,7 +21,8 @@ class SudokuRowDeserializer implements JsonDeserializer<SudokuCells> {
         SudokuCells cells = new SudokuCells();
         SudokuColDeserializer scd = new SudokuColDeserializer();
         for (JsonElement col: json.getAsJsonArray()) {
-            cells.add(scd.deserialize(col, ArrayList.class, context));
+            ArrayList<SudokuCell> colCells = context.deserialize(col, ArrayList.class);
+            cells.add(colCells);
         }
         return cells;
     }
