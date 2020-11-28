@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-devtools")
     implementation("com.google.guava:guava:29.0-jre")
+    implementation("org.json:json:20201115");
     implementation("com.google.code.gson:gson:2.8.6")
 }
 

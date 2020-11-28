@@ -1,7 +1,7 @@
 package JavaJam;
 
 class EnvironmentFactory {
-    public static Environment build(EnvironmentTypes type, int ident) {
+    public static Environment build(EnvironmentTypes type, int ident, SudokuCells cells) {
         Environment le = new Environment(ident);
 
         if (type == EnvironmentTypes.SQUARE) {
@@ -13,7 +13,7 @@ class EnvironmentFactory {
         else if (type == EnvironmentTypes.ROW) {
             le.setStrategy(new RowEnvironment());
         }
-        le.populate();
+        le.populate(cells);
 
         return le;
     }
@@ -41,12 +41,10 @@ class Environment {
         this.environmentType.setSpace(this.space);
     }
 
-    public void populate() {
-        this.environmentType.populate();
+    public void populate(SudokuCells cells) {
+        this.environmentType.populate(cells);
     }
 }
-
-
 
 /**
  * Bounded Environment interface
@@ -59,7 +57,7 @@ class Environment {
  *  is accomplishing that.
  */
 interface BoundedEnvironment extends EnvironmentSubscriberInterface {
-    void populate();
+    void populate(SudokuCells cells);
     void setSpace(int space);
 }
 
@@ -109,12 +107,13 @@ class SquareEnvironment extends AmorphousBoundedEnvironment {
         return false;
     }
 
-    public void populate() {
+    public void populate(SudokuCells cells) {
         for (int i=0; i < 9; i++) {
             int posX = (i % this.squareSize) + ((this.x * this.squareSize));
             int posY = (i / this.squareSize) + ((this.y * this.squareSize));
-            this.elements[i] = SudokuBoard.board[posX][posY];
-            SudokuBoard.board[posX][posY].subscribe(this);
+            SudokuCell cell = cells.getCell(posX, posY);
+            this.elements[i] = cell;
+            cell.subscribe(this);
         }
     }
 
@@ -138,16 +137,17 @@ class ColumnEnvironment extends AmorphousBoundedEnvironment {
         return false;
     }
 
-    public void populate() {
+    public void populate(SudokuCells cells) {
         for (int i=0; i < 9; i++) {
-            this.elements[i] = SudokuBoard.board[i][this.space];
-            SudokuBoard.board[i][this.space].subscribe(this);
+            SudokuCell cell = cells.getCell(i, this.space);
+            this.elements[i] = cell;
+            cell.subscribe(this);
         }
     }
 
     public boolean contains(int value){
-        for (int i = 0; i < elements.length; i++) {
-            if (this.elements[i].value == value) {
+        for (int row = 0; row < elements.length; row++) {
+            if (this.elements[row].value == value) {
                 return true;
             }
         }
@@ -165,10 +165,11 @@ class RowEnvironment extends AmorphousBoundedEnvironment {
         return false;
     }
 
-    public void populate() {
-        for (int i = 0; i < 9; i++) {
-            this.elements[i] = SudokuBoard.board[this.space][i];
-            SudokuBoard.board[this.space][i].subscribe(this);
+    public void populate(SudokuCells cells) {
+        for (int col = 0; col < 9; col++) {
+            SudokuCell cell = cells.getCell(this.space, col);
+            this.elements[col] = cell;
+            cell.subscribe(this);
         }
     }
 
