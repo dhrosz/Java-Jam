@@ -19,7 +19,6 @@ class SudokuBoardDeserializer implements JsonDeserializer {
 class SudokuRowDeserializer implements JsonDeserializer<SudokuCells> {
     public SudokuCells deserialize(JsonElement json, Type TypeOfT, JsonDeserializationContext context) throws JsonParseException {
         SudokuCells cells = new SudokuCells();
-        SudokuColDeserializer scd = new SudokuColDeserializer();
         for (JsonElement col: json.getAsJsonArray()) {
             ArrayList<SudokuCell> colCells = context.deserialize(col, ArrayList.class);
             cells.add(colCells);
